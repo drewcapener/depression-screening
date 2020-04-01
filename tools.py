@@ -32,7 +32,7 @@ def wrapper(classifier, trainData, trainLabels, testData, testLabels):
         print("using these features: " + str(best[1]))
 
 
-data_frame = pd.read_csv("matthew_delta.csv")
+data_frame = pd.read_csv("data/matthew_delta.csv")
 
 data = data_frame.iloc[:, 1:]
 data = data.dropna(how='any')
