@@ -65,7 +65,7 @@ print("Baseline accuracy: ")
 print(dummyClassifier.score(finalTestData,finalTestLabels))
 
 # Pick your classifier here and pass it in to the wrapper
-mlp = mlp(max_iter=100)
+mlp = mlp(max_iter=1000)
 wrapper(mlp, finalTrainData, finalTrainLabels.flatten(), finalTestData, finalTestLabels.flatten())
 
 
