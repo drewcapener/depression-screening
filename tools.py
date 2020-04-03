@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 
 
 def splitData(X, y, trainingPercentage):
@@ -32,13 +33,16 @@ def wrapper(classifier, trainData, trainLabels, testData, testLabels):
         print("using these features: " + str(best[1]))
 
 
-def extract_data(path):
+def extract_data(path, normalized=False):
     data_frame = pd.read_csv(path)
 
     data = data_frame.iloc[:, 1:]
     data = data.dropna(how='any')
     y = data.PHQ2.to_numpy()
     X = data.drop("PHQ2", axis=1).to_numpy()
+    X = X[:, 1:]
+    if normalized:
+        X = preprocessing.minmax_scale(X)
     return X, y
 
 
