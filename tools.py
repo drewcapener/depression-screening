@@ -2,19 +2,6 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
-
-def splitData(X, y, trainingPercentage):
-    combinedArray = np.concatenate((X, y), axis=1)
-    np.random.shuffle(combinedArray)
-
-    seventyPercent = (len(X)*(trainingPercentage*10))//10
-
-    newX = combinedArray[:, :len(X[0])]
-    newY = combinedArray[:, len(X[0]):]
-
-    return newX[:int(seventyPercent)], newY[:int(seventyPercent)], newX[int(seventyPercent):], newY[int(seventyPercent):]
-
-
 def wrapper(classifier, trainData, trainLabels, testData, testLabels):
     classifier.fit(trainData, trainLabels)
     print("Accuracy = " + str(classifier.score(testData, testLabels)))
@@ -35,7 +22,6 @@ def wrapper(classifier, trainData, trainLabels, testData, testLabels):
 
 def extract_data(path, normalized=False):
     data_frame = pd.read_csv(path)
-
     data = data_frame.iloc[:, 1:]
     data = data.dropna(how='any')
     y = data.PHQ2.to_numpy()
@@ -46,7 +32,7 @@ def extract_data(path, normalized=False):
     return X, y
 
 
-def split_data(X, y, training_percent=0.7, percent_zeroes=0.05):
+def split_data(X, y, training_percent=0.7, percent_zeroes=0.05, n_nonzero_repeat=0):
     if percent_zeroes is not None and percent_zeroes > 0:
         # Get <percent_zeroes> percent of the data where y = 0 for training, the rest goes to test set
         permutation = np.random.permutation(np.where(y == 0)[0])
@@ -57,6 +43,8 @@ def split_data(X, y, training_percent=0.7, percent_zeroes=0.05):
         permutation = np.random.permutation(np.where(y != 0)[0])
         split_idx = int(len(permutation) * training_percent)
         nonzero_X_train, nonzero_y_train, nonzero_X_test, nonzero_y_test = apply_permutation(X, y, permutation, split_idx)
+        nonzero_X_train = np.repeat(nonzero_X_train, n_nonzero_repeat, axis=0)
+        nonzero_y_train = np.repeat(nonzero_y_train, n_nonzero_repeat, axis=0)
 
         # Concatenate train/test sets with both zero/nonzero sets
         X_train, y_train = np.concatenate((zeroes_X_train, nonzero_X_train)), np.concatenate((zeroes_y_train, nonzero_y_train))
