@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
+from sklearn.metrics import mean_squared_error
 
 def wrapper(classifier, trainData, trainLabels, testData, testLabels):
     classifier.fit(trainData, trainLabels)
-    print("Accuracy = " + str(classifier.score(testData, testLabels)))
-    best = (classifier.score(testData, testLabels), np.arange(len(trainData[0])))
+    print("Accuracy = " + str(score(classifier, testData, testLabels)))
+    best = (score(classifier, testData, testLabels), np.arange(len(trainData[0])))
     while 1:
         newThings = []
         for x in range(len(best[1])):
@@ -13,12 +14,15 @@ def wrapper(classifier, trainData, trainLabels, testData, testLabels):
             newTrainData = trainData[:,lst]
             newTestData = testData[:,lst]
             classifier.fit(newTrainData, trainLabels)
-            newThings.append((classifier.score(newTestData, testLabels), lst))
+            newThings.append((score(classifier, newTestData, testLabels), lst))
         newThings.sort(key=lambda z: z[0])
-        best = newThings[-1]
+        best = newThings[0]
         print("new best = " + str(best[0]))
         print("using these features: " + str(best[1]))
 
+def score(classifier, X_test, y_test):
+    y_pred = classifier.predict(X_test)
+    return mean_squared_error(y_test, y_pred)
 
 def extract_data(path, normalized=False):
     data_frame = pd.read_csv(path)
@@ -26,9 +30,9 @@ def extract_data(path, normalized=False):
     data = data.dropna(how='any')
     y = data.PHQ2.to_numpy()
     X = data.drop("PHQ2", axis=1).to_numpy()
-    X = X[:, 1:]
     if normalized:
         X = preprocessing.minmax_scale(X)
+        y = preprocessing.minmax_scale(y)
     return X, y
 
 
