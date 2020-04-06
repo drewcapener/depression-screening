@@ -1,3 +1,5 @@
 .vscode/*
 .idea/*
 .idea/inspectionProfiles/*
+__pycache__/*
+*.pyc
